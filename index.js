@@ -3,7 +3,7 @@ const Joi = require('joi');
 const express = require('express');
 const app = express();
 app.use(express.json());
-// express.json will call a piece of middleware and then we call app.use to use that middleware
+// express.json will return a piece of middleware and then we call app.use to use that middleware
 
 const courses = [{ id: 1, name: 'course1 ' }, { id: 2, name: 'course2 ' }, { id: 3, name: 'course3 ' }];
 // (path , callbackfunction, it again has two parameter, it is also called Route handler)
@@ -22,10 +22,9 @@ app.get('/api/courses/:id', (req, res) => {
 
 app.post('/api/courses', (req, res) => {
 	const { error } = validateCourse(req.body); //destructuring const result = Joi.validateCourse(req.body)
-	if (error) {
-		res.status(400).send(error.details[0].message);
-		return;
-	}
+	if (error) return res.status(400).send(error.details[0].message);
+		
+	
 	const course = {
 		id: courses.length + 1,
 		name: req.body.name,
@@ -35,24 +34,26 @@ app.post('/api/courses', (req, res) => {
 	res.send(course);
 });
 
-app.put('api/courses/:id', (req, res) => {
+app.put('/api/courses/:id', (req, res) => {
 	// look up the course, if not existing return 404
-	// update course
-	// return  the updated course
 
 	const course = courses.find(c => c.id === parseInt(req.params.id));
     if (!course) return res.status(400).send('given course  with the id was not found');
     
-    const { error } = validateCourse(req.body);    // const result = Joi.validateCourse(req.body)// result has error
+    //validate, if invalid, return 400- Bad request
+
+    const { error } = validateCourse(req.body);    // const result = validateCourse(req.body) // result has error // result.error
 	if (error) {
 		res.status(400).send(error.details[0].message);
 		return;
-	}
-	course.name = req.body.name;
+    }
+     // update course
+    course.name = req.body.name;
+    // return  the updated course
 	res.send(course);
 });
 
-app.delete('./api/course/:id', (req,res)=>{
+app.delete('/api/courses/:id', (req,res)=>{
     //look up the course
     //Not existing return 404
 
@@ -61,7 +62,7 @@ app.delete('./api/course/:id', (req,res)=>{
 
     //Delete
     const index = courses.indexOf(course);
-    ccourses.splice(index, 1);
+    courses.splice(index, 1);
 
     
     //Return the same course
