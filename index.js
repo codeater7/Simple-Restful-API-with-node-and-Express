@@ -7,15 +7,14 @@ app.use(express.json());
 
 const courses = [{ id: 1, name: 'course1 ' }, { id: 2, name: 'course2 ' }, { id: 3, name: 'course3 ' }];
 // (path , callbackfunction, it again has two parameter, it is also called Route handler)
-app.get('/', (req, res) => {
-	res.send('hello world');
-});
+
 app.get('/api/courses', (req, res) => {
 	// In real work here is work of database
 	res.send(courses);
 });
 app.get('/api/courses/:id', (req, res) => {
-	const course = courses.find(c => c.id === parseInt(req.params.id));
+    const course = courses.find(c => c.id === parseInt(req.params.id));
+    console.log(course)
 	if (!course) res.status(400).send('given course was not found');
 	res.send(course);
 });
@@ -24,7 +23,7 @@ app.post('/api/courses', (req, res) => {
 	const { error } = validateCourse(req.body); //destructuring const result = Joi.validateCourse(req.body)
 	if (error) return res.status(400).send(error.details[0].message);
 		
-	
+	// Give the schema in the post 
 	const course = {
 		id: courses.length + 1,
 		name: req.body.name,
